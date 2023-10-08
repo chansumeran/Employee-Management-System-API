@@ -3,12 +3,10 @@ package com.chrisumeran.EMS.employee;
 import com.chrisumeran.EMS.mapper.Mapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -36,5 +34,14 @@ public class EmployeeController {
                 .stream()
                 .map(employeeMapper::mapTo)
                 .collect(Collectors.toList());
+    }
+
+    @GetMapping(path = "/employees/{empID}")
+    public ResponseEntity<EmployeeDTO> findOneEmployee(@PathVariable("empID") Long empID) {
+        Optional<EmployeeEntity> foundEmployee = employeeService.findOne(empID);
+        return foundEmployee.map(employee -> {
+            EmployeeDTO employeeDTO = employeeMapper.mapTo(employee);
+            return new ResponseEntity<>(employeeDTO, HttpStatus.OK);
+        }).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 }

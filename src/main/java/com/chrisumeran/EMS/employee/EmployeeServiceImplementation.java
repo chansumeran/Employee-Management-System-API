@@ -3,6 +3,7 @@ package com.chrisumeran.EMS.employee;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -27,5 +28,10 @@ public class EmployeeServiceImplementation implements EmployeeService {
                 .spliterator(),
                 false)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<EmployeeEntity> findOne(Long empID) {
+        return employeeRepository.findById(empID);
     }
 }
