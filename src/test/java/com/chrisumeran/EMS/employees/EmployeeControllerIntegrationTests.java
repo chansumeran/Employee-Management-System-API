@@ -35,6 +35,7 @@ public class EmployeeControllerIntegrationTests {
         this.objectMapper = new ObjectMapper();
     }
 
+    // Create Endpoint Integration Tests
     @Test
     public void testThatCreateEmployeeSuccessfullyAndReturnHttp201Created() throws Exception {
         EmployeeEntity employeeEntity = TestDataUtil.testCreateEmployeeA();
@@ -75,8 +76,9 @@ public class EmployeeControllerIntegrationTests {
         );
     }
 
+    // Find Many Endpoint Integration Tests
     @Test
-    public void testThatFindEmployeesSuccessfullyAndReturnHttp20Ok() throws Exception {
+    public void testThatFindEmployeesSuccessfullyAndReturnHttp200Ok() throws Exception {
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/employees")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -105,6 +107,43 @@ public class EmployeeControllerIntegrationTests {
                 MockMvcResultMatchers.jsonPath("$[0].salary").value(testCreateEmployeeA.getSalary())
         ).andExpect(
                 MockMvcResultMatchers.jsonPath("$[0].hireDate").value(testCreateEmployeeA.getHireDate())
+        );
+    }
+
+    // Fine One Endpoint Integration Tests
+    @Test
+    public void testThatFindEmployeeSuccessfullyAndReturnHttp200Ok() throws Exception {
+        EmployeeEntity employeeEntity = TestDataUtil.testCreateEmployeeA();
+        employeeService.createEmployee(employeeEntity);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/employees/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isOk()
+        );
+    }
+
+    @Test
+    public void testThatFindEmployeeSuccessfullyAndReturnSavedEmployee() throws Exception {
+        EmployeeEntity employeeEntity = TestDataUtil.testCreateEmployeeA();
+        employeeService.createEmployee(employeeEntity);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/employees/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.empID").isNumber()
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.firstName").value(employeeEntity.getFirstName())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.lastName").value(employeeEntity.getLastName())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.email").value(employeeEntity.getEmail())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.salary").value(employeeEntity.getSalary())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.hireDate").value(employeeEntity.getHireDate())
         );
     }
 }
