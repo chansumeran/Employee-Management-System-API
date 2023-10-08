@@ -1,6 +1,7 @@
 package com.chrisumeran.EMS;
 
 import com.chrisumeran.EMS.department.DepartmentEntity;
+import com.chrisumeran.EMS.employee.EmployeeEntity;
 
 public class TestDataUtil {
 
