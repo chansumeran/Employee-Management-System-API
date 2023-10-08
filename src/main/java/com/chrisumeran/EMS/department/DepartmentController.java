@@ -3,12 +3,10 @@ package com.chrisumeran.EMS.department;
 import com.chrisumeran.EMS.mapper.Mapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -39,5 +37,14 @@ public class DepartmentController {
                 .stream()
                 .map(departmentMapper::mapTo)
                 .collect(Collectors.toList());
+    }
+
+    @GetMapping("departments/{deptID}")
+    public ResponseEntity<DepartmentDTO> findDepartment(@PathVariable("deptID") Long deptID) {
+        Optional<DepartmentEntity> foundDepartment = departmentService.findOne(deptID);
+        return foundDepartment.map(department -> {
+            DepartmentDTO departmentDTO = departmentMapper.mapTo(department);
+            return new ResponseEntity<>(departmentDTO, HttpStatus.OK);
+        }).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 }

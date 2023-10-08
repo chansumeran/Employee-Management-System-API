@@ -3,6 +3,7 @@ package com.chrisumeran.EMS.department;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -27,5 +28,10 @@ public class DepartmentServiceImplementation implements DepartmentService{
                 .spliterator(),
                 false)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<DepartmentEntity> findOne(Long deptID) {
+        return departmentRepository.findById(deptID);
     }
 }
