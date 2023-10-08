@@ -2,6 +2,7 @@ package com.chrisumeran.EMS.employees;
 
 import com.chrisumeran.EMS.TestDataUtil;
 import com.chrisumeran.EMS.employee.EmployeeEntity;
+import com.chrisumeran.EMS.employee.EmployeeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,18 +22,21 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @AutoConfigureMockMvc
 public class EmployeeControllerIntegrationTests {
 
+    private EmployeeService employeeService;
+
     private MockMvc mockMvc;
 
     private ObjectMapper objectMapper;
 
     @Autowired
-    public EmployeeControllerIntegrationTests(MockMvc mockMvc) {
+    public EmployeeControllerIntegrationTests(EmployeeService employeeService, MockMvc mockMvc) {
+        this.employeeService = employeeService;
         this.mockMvc = mockMvc;
         this.objectMapper = new ObjectMapper();
     }
 
     @Test
-    void testThatCreateEmployeeSuccessfullyAndReturnHttp201Created() throws Exception {
+    public void testThatCreateEmployeeSuccessfullyAndReturnHttp201Created() throws Exception {
         EmployeeEntity employeeEntity = TestDataUtil.testCreateEmployeeA();
         employeeEntity.setEmpID(null);
         String employeeJson = objectMapper.writeValueAsString(employeeEntity);
@@ -47,7 +51,7 @@ public class EmployeeControllerIntegrationTests {
     }
 
     @Test
-    void testThatCreateEmployeeSuccessfullyAndReturnSavedEmployee() throws Exception {
+    public void testThatCreateEmployeeSuccessfullyAndReturnSavedEmployee() throws Exception {
         EmployeeEntity employeeEntity = TestDataUtil.testCreateEmployeeA();
         employeeEntity.setEmpID(null);
         String employeeJson = objectMapper.writeValueAsString(employeeEntity);
@@ -68,6 +72,39 @@ public class EmployeeControllerIntegrationTests {
                 MockMvcResultMatchers.jsonPath("$.salary").value(employeeEntity.getSalary())
         ).andExpect(
                 MockMvcResultMatchers.jsonPath("$.department").value(employeeEntity.getDepartment())
+        );
+    }
+
+    @Test
+    public void testThatFindEmployeesSuccessfullyAndReturnHttp20Ok() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/employees")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isOk()
+        );
+    }
+
+    @Test
+    public void testThatFindEmployeesSuccessfullyAndReturnSavedEmployee() throws Exception {
+        EmployeeEntity testCreateEmployeeA = TestDataUtil.testCreateEmployeeA();
+        employeeService.createEmployee(testCreateEmployeeA);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/employees")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$[0].empID").isNumber()
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$[0].firstName").value(testCreateEmployeeA.getFirstName())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$[0].lastName").value(testCreateEmployeeA.getLastName())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$[0].email").value(testCreateEmployeeA.getEmail())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$[0].salary").value(testCreateEmployeeA.getSalary())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$[0].hireDate").value(testCreateEmployeeA.getHireDate())
         );
     }
 }
