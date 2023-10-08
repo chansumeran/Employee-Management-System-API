@@ -91,4 +91,33 @@ public class DepartmentControllerIntegrationTests {
                 MockMvcResultMatchers.jsonPath("$[0].name").value(testCreateDepartmentA.getName())
         );
     }
+
+    // Read One Endpoint Integration Tests
+    @Test
+    public void testThatReadDepartmentSuccessfullyAndReturnHttp200Ok() throws Exception {
+        DepartmentEntity testCreateDepartmentA = TestDataUtil.testCreateDepartmentA();
+        departmentService.createDepartment(testCreateDepartmentA);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/departments/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isOk()
+        );
+    }
+
+    @Test
+    public void testThatReadDepartmentSuccessfullyAndReturnSavedDepartment() throws Exception {
+        DepartmentEntity testCreateDepartmentA = TestDataUtil.testCreateDepartmentA();
+        departmentService.createDepartment(testCreateDepartmentA);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/departments/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.deptID").isNumber()
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.name").value(testCreateDepartmentA.getName())
+        );
+    }
 }
