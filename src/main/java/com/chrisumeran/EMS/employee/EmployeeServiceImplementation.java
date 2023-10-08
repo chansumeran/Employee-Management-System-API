@@ -2,6 +2,10 @@ package com.chrisumeran.EMS.employee;
 
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 @Service
 public class EmployeeServiceImplementation implements EmployeeService {
 
@@ -14,5 +18,14 @@ public class EmployeeServiceImplementation implements EmployeeService {
     @Override
     public EmployeeEntity createEmployee(EmployeeEntity employee) {
         return employeeRepository.save(employee);
+    }
+
+    @Override
+    public List<EmployeeEntity> findAll() {
+        return StreamSupport.stream(employeeRepository
+                .findAll()
+                .spliterator(),
+                false)
+                .collect(Collectors.toList());
     }
 }
