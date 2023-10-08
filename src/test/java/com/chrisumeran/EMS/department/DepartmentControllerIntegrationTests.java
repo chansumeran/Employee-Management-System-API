@@ -20,16 +20,21 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class DepartmentControllerIntegrationTests {
 
+    private DepartmentService departmentService;
+
     private ObjectMapper objectMapper;
 
     private MockMvc mockMvc;
 
     @Autowired
-    public DepartmentControllerIntegrationTests(MockMvc mockMvc) {
+    public DepartmentControllerIntegrationTests(DepartmentService departmentService, MockMvc mockMvc) {
+        this.departmentService = departmentService;
         this.mockMvc = mockMvc;
         this.objectMapper = new ObjectMapper();
     }
 
+
+    // Create Endpoint Integration Tests
     @Test
     public void testThatCreateDepartmentSuccessfullyAndReturnHttp201Created() throws Exception {
         DepartmentEntity departmentEntity = TestDataUtil.testCreateDepartmentA();
@@ -58,6 +63,32 @@ public class DepartmentControllerIntegrationTests {
                 MockMvcResultMatchers.jsonPath("$.deptID").isNumber()
         ).andExpect(
                 MockMvcResultMatchers.jsonPath("$.name").value(departmentEntity.getName())
+        );
+    }
+
+    // Read Many Endpoint Integration Tests
+    @Test
+    public void testThatReadDepartmentsSuccessfullyAndReturnHttp200Ok() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/departments")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isOk()
+        );
+    }
+
+    @Test
+    public void testThatReadDepartmentsSuccessfullyAndReturnSavedDepartment() throws Exception {
+        DepartmentEntity testCreateDepartmentA = TestDataUtil.testCreateDepartmentA();
+        departmentService.createDepartment(testCreateDepartmentA);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/departments")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$[0].deptID").isNumber()
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$[0].name").value(testCreateDepartmentA.getName())
         );
     }
 }
