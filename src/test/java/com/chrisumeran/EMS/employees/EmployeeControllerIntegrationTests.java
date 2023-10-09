@@ -1,6 +1,7 @@
 package com.chrisumeran.EMS.employees;
 
 import com.chrisumeran.EMS.TestDataUtil;
+import com.chrisumeran.EMS.employee.EmployeeDTO;
 import com.chrisumeran.EMS.employee.EmployeeEntity;
 import com.chrisumeran.EMS.employee.EmployeeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -134,6 +135,65 @@ public class EmployeeControllerIntegrationTests {
                         .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(
                 MockMvcResultMatchers.jsonPath("$.empID").isNumber()
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.firstName").value(employeeEntity.getFirstName())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.lastName").value(employeeEntity.getLastName())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.email").value(employeeEntity.getEmail())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.salary").value(employeeEntity.getSalary())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.hireDate").value(employeeEntity.getHireDate())
+        );
+    }
+
+    // Full Update Endpoint Integration Tests
+   @Test
+    public void testThatFullUpdateEmployeeReturnsHttpStatus404WhenNoEmployeeExists() throws Exception {
+       EmployeeDTO employeeDTO = TestDataUtil.testCreateEmployeeDtoA();
+       String savedEmployeeDto = objectMapper.writeValueAsString(employeeDTO);
+
+       mockMvc.perform(
+               MockMvcRequestBuilders.put("/employees/99")
+                       .contentType(MediaType.APPLICATION_JSON)
+                       .content(savedEmployeeDto)
+       ).andExpect(
+               MockMvcResultMatchers.status().isNotFound()
+       );
+   }
+
+    @Test
+    public void testThatFullUpdateEmployeeReturnsHttpStatus200WhenEmployeeExists() throws Exception {
+        EmployeeEntity employeeEntity = TestDataUtil.testCreateEmployeeA();
+        EmployeeEntity savedEmployeeEntity = employeeService.save(employeeEntity);
+
+        EmployeeDTO employeeDTO = TestDataUtil.testCreateEmployeeDtoA();
+        String savedEmployeeDto = objectMapper.writeValueAsString(employeeDTO);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.put("/employees/" + savedEmployeeEntity.getEmpID())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(savedEmployeeDto)
+        ).andExpect(
+                MockMvcResultMatchers.status().isOk()
+        );
+    }
+
+    @Test
+    public void testThatFullUpdatesExistingEmployee() throws Exception {
+        EmployeeEntity employeeA = TestDataUtil.testCreateEmployeeA();
+        EmployeeEntity savedEmployeeA = employeeService.save(employeeA);
+
+        EmployeeEntity employeeEntity = TestDataUtil.testCreateEmployeeB();
+        String employeeEntityJson = objectMapper.writeValueAsString(employeeEntity);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.put("/employees/" + savedEmployeeA.getEmpID())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(employeeEntityJson)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.empID").value(savedEmployeeA.getEmpID())
         ).andExpect(
                 MockMvcResultMatchers.jsonPath("$.firstName").value(employeeEntity.getFirstName())
         ).andExpect(
