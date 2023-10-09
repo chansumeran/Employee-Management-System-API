@@ -90,7 +90,7 @@ public class EmployeeControllerIntegrationTests {
     @Test
     public void testThatFindEmployeesSuccessfullyAndReturnSavedEmployee() throws Exception {
         EmployeeEntity testCreateEmployeeA = TestDataUtil.testCreateEmployeeA();
-        employeeService.createEmployee(testCreateEmployeeA);
+        employeeService.save(testCreateEmployeeA);
 
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/employees")
@@ -114,7 +114,7 @@ public class EmployeeControllerIntegrationTests {
     @Test
     public void testThatFindEmployeeSuccessfullyAndReturnHttp200Ok() throws Exception {
         EmployeeEntity employeeEntity = TestDataUtil.testCreateEmployeeA();
-        employeeService.createEmployee(employeeEntity);
+        employeeService.save(employeeEntity);
 
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/employees/1")
@@ -127,7 +127,7 @@ public class EmployeeControllerIntegrationTests {
     @Test
     public void testThatFindEmployeeSuccessfullyAndReturnSavedEmployee() throws Exception {
         EmployeeEntity employeeEntity = TestDataUtil.testCreateEmployeeA();
-        employeeService.createEmployee(employeeEntity);
+        employeeService.save(employeeEntity);
 
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/employees/1")

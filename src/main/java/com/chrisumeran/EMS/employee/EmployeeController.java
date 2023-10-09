@@ -23,7 +23,7 @@ public class EmployeeController {
     @PostMapping(path = "/employees")
     public ResponseEntity<EmployeeDTO> createEmployee(@RequestBody EmployeeDTO employeeDTO) {
         EmployeeEntity employeeEntity = employeeMapper.mapFrom(employeeDTO);
-        EmployeeEntity savedEmployeeEntity = employeeService.createEmployee(employeeEntity);
+        EmployeeEntity savedEmployeeEntity = employeeService.save(employeeEntity);
         return new ResponseEntity<>(employeeMapper.mapTo(savedEmployeeEntity), HttpStatus.CREATED);
     }
 
@@ -43,5 +43,20 @@ public class EmployeeController {
             EmployeeDTO employeeDTO = employeeMapper.mapTo(employee);
             return new ResponseEntity<>(employeeDTO, HttpStatus.OK);
         }).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @PutMapping(path = "/employees/{empID}")
+    public ResponseEntity<EmployeeDTO> fullUpdateEmployee(@PathVariable("empID") Long empID,
+                                                          @RequestBody EmployeeDTO employeeDTO) {
+
+        if (!employeeService.ifExists(empID)) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        employeeDTO.setEmpID(empID);
+        EmployeeEntity employeeEntity = employeeMapper.mapFrom(employeeDTO);
+        EmployeeEntity savedEmployeeEntity = employeeService.save(employeeEntity);
+
+        return new ResponseEntity<>(employeeMapper.mapTo(savedEmployeeEntity), HttpStatus.OK);
     }
 }

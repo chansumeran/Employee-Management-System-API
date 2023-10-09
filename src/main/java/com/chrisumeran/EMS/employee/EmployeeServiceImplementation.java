@@ -17,7 +17,7 @@ public class EmployeeServiceImplementation implements EmployeeService {
     }
 
     @Override
-    public EmployeeEntity createEmployee(EmployeeEntity employee) {
+    public EmployeeEntity save(EmployeeEntity employee) {
         return employeeRepository.save(employee);
     }
 
@@ -33,5 +33,10 @@ public class EmployeeServiceImplementation implements EmployeeService {
     @Override
     public Optional<EmployeeEntity> findOne(Long empID) {
         return employeeRepository.findById(empID);
+    }
+
+    @Override
+    public boolean ifExists(Long empID) {
+        return employeeRepository.existsById(empID);
     }
 }

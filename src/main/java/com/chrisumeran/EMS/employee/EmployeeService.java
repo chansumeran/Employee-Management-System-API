@@ -5,9 +5,11 @@ import java.util.Optional;
 
 public interface EmployeeService {
 
-    EmployeeEntity createEmployee(EmployeeEntity employee);
+    EmployeeEntity save(EmployeeEntity employee);
 
     List<EmployeeEntity> findAll();
 
     Optional<EmployeeEntity> findOne(Long empID);
+
+    boolean ifExists(Long empID);
 }
