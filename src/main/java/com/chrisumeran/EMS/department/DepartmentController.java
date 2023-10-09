@@ -12,9 +12,9 @@ import java.util.stream.Collectors;
 @RestController
 public class DepartmentController {
 
-    private DepartmentService departmentService;
+    private final DepartmentService departmentService;
 
-    private Mapper<DepartmentEntity, DepartmentDTO> departmentMapper;
+    private final Mapper<DepartmentEntity, DepartmentDTO> departmentMapper;
 
     public DepartmentController(Mapper<DepartmentEntity, DepartmentDTO> departmentMapper, DepartmentService departmentService) {
         this.departmentMapper = departmentMapper;
@@ -25,7 +25,9 @@ public class DepartmentController {
     @PostMapping(path = "/departments")
     public ResponseEntity<DepartmentDTO> createDepartment(@RequestBody DepartmentDTO department) {
         DepartmentEntity departmentEntity = departmentMapper.mapFrom(department);
-        DepartmentEntity savedDepartmentEntity = departmentService.createDepartment(departmentEntity);
+        DepartmentEntity savedDepartmentEntity = departmentService.save(departmentEntity);
+
+        // return HttpStatus 201
         return new ResponseEntity<>(departmentMapper.mapTo(savedDepartmentEntity), HttpStatus.CREATED);
     }
 
@@ -39,12 +41,33 @@ public class DepartmentController {
                 .collect(Collectors.toList());
     }
 
+    // read one endpoint
     @GetMapping("departments/{deptID}")
     public ResponseEntity<DepartmentDTO> findDepartment(@PathVariable("deptID") Long deptID) {
         Optional<DepartmentEntity> foundDepartment = departmentService.findOne(deptID);
+
         return foundDepartment.map(department -> {
             DepartmentDTO departmentDTO = departmentMapper.mapTo(department);
+
+            // returns a department and HttpStatus 200
             return new ResponseEntity<>(departmentDTO, HttpStatus.OK);
         }).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    // update all endpoint
+    @PutMapping("departments/{deptID}")
+    public ResponseEntity<DepartmentDTO> fullUpdateDepartment(@PathVariable("deptID") Long deptID,
+                                                              @RequestBody DepartmentDTO departmentDTO) {
+        // if a department doesn't exist, return HttpStatus 404
+        if (!departmentService.ifExists(deptID)) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        departmentDTO.setDeptID(deptID);
+        DepartmentEntity departmentEntity = departmentMapper.mapFrom(departmentDTO);
+        DepartmentEntity savedDepartmentEntity = departmentService.save(departmentEntity);
+
+        // Updates the department and returns HttpStatus 200
+        return new ResponseEntity<>(departmentMapper.mapTo(savedDepartmentEntity), HttpStatus.OK);
     }
 }

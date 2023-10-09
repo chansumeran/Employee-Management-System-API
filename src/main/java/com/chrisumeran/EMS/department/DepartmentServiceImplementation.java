@@ -10,14 +10,14 @@ import java.util.stream.StreamSupport;
 @Service
 public class DepartmentServiceImplementation implements DepartmentService{
 
-    private DepartmentRepository departmentRepository;
+    private final DepartmentRepository departmentRepository;
 
-    public DepartmentServiceImplementation(DepartmentRepository departmentRepository) {
+    public DepartmentServiceImplementation(final DepartmentRepository departmentRepository) {
         this.departmentRepository = departmentRepository;
     }
 
     @Override
-    public DepartmentEntity createDepartment(DepartmentEntity department) {
+    public DepartmentEntity save(DepartmentEntity department) {
         return departmentRepository.save(department);
     }
 
@@ -33,5 +33,10 @@ public class DepartmentServiceImplementation implements DepartmentService{
     @Override
     public Optional<DepartmentEntity> findOne(Long deptID) {
         return departmentRepository.findById(deptID);
+    }
+
+    @Override
+    public boolean ifExists(Long deptID) {
+        return departmentRepository.existsById(deptID);
     }
 }

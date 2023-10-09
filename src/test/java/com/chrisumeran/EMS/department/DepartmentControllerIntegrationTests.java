@@ -1,6 +1,7 @@
 package com.chrisumeran.EMS.department;
 
 import com.chrisumeran.EMS.TestDataUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -80,7 +81,7 @@ public class DepartmentControllerIntegrationTests {
     @Test
     public void testThatReadDepartmentsSuccessfullyAndReturnSavedDepartment() throws Exception {
         DepartmentEntity testCreateDepartmentA = TestDataUtil.testCreateDepartmentA();
-        departmentService.createDepartment(testCreateDepartmentA);
+        departmentService.save(testCreateDepartmentA);
 
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/departments")
@@ -96,7 +97,7 @@ public class DepartmentControllerIntegrationTests {
     @Test
     public void testThatReadDepartmentSuccessfullyAndReturnHttp200Ok() throws Exception {
         DepartmentEntity testCreateDepartmentA = TestDataUtil.testCreateDepartmentA();
-        departmentService.createDepartment(testCreateDepartmentA);
+        departmentService.save(testCreateDepartmentA);
 
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/departments/1")
@@ -109,7 +110,7 @@ public class DepartmentControllerIntegrationTests {
     @Test
     public void testThatReadDepartmentSuccessfullyAndReturnSavedDepartment() throws Exception {
         DepartmentEntity testCreateDepartmentA = TestDataUtil.testCreateDepartmentA();
-        departmentService.createDepartment(testCreateDepartmentA);
+        departmentService.save(testCreateDepartmentA);
 
         mockMvc.perform(
                 MockMvcRequestBuilders.get("/departments/1")
@@ -118,6 +119,57 @@ public class DepartmentControllerIntegrationTests {
                 MockMvcResultMatchers.jsonPath("$.deptID").isNumber()
         ).andExpect(
                 MockMvcResultMatchers.jsonPath("$.name").value(testCreateDepartmentA.getName())
+        );
+    }
+
+    // Full Update Integration Tests
+    @Test
+    public void testThatFullUpdateDepartmentReturnsHttpStatus404WhenNoDepartmentExists() throws  Exception {
+        DepartmentDTO departmentDTO = TestDataUtil.testCreateDepartmentDtoA();
+        String departmentDtoJson = objectMapper.writeValueAsString(departmentDTO);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.put("/departments/99")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(departmentDtoJson)
+        ).andExpect(
+                MockMvcResultMatchers.status().isNotFound()
+        );
+    }
+
+    @Test
+    public void testThatFullUpdateDepartmentReturnsHttpStatus200WhenDepartmentExists() throws  Exception {
+        DepartmentEntity departmentEntity = TestDataUtil.testCreateDepartmentA();
+        DepartmentEntity savedDepartmentEntity = departmentService.save(departmentEntity);
+
+        DepartmentDTO departmentDTO = TestDataUtil.testCreateDepartmentDtoA();
+        String departmentDtoJson = objectMapper.writeValueAsString(departmentDTO);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.put("/departments/" + savedDepartmentEntity.getDeptID())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(departmentDtoJson)
+        ).andExpect(
+                MockMvcResultMatchers.status().isOk()
+        );
+    }
+
+    @Test
+    public void testThatFullUpdatesExistingAuthor() throws Exception {
+        DepartmentEntity departmentEntity = TestDataUtil.testCreateDepartmentA();
+        DepartmentEntity savedDepartmentEntity = departmentService.save(departmentEntity);
+
+        DepartmentEntity departmentDTO = TestDataUtil.testCreateDepartmentB();
+        String savedDepartmentDTO = objectMapper.writeValueAsString(departmentDTO);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.put("/departments/" + savedDepartmentEntity.getDeptID())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(savedDepartmentDTO)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.deptID").value(savedDepartmentEntity.getDeptID())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.name").value(departmentDTO.getName())
         );
     }
 }
