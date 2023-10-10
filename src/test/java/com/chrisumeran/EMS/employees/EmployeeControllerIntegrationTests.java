@@ -4,6 +4,7 @@ import com.chrisumeran.EMS.TestDataUtil;
 import com.chrisumeran.EMS.employee.EmployeeDTO;
 import com.chrisumeran.EMS.employee.EmployeeEntity;
 import com.chrisumeran.EMS.employee.EmployeeService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -204,6 +205,44 @@ public class EmployeeControllerIntegrationTests {
                 MockMvcResultMatchers.jsonPath("$.salary").value(employeeEntity.getSalary())
         ).andExpect(
                 MockMvcResultMatchers.jsonPath("$.hireDate").value(employeeEntity.getHireDate())
+        );
+    }
+
+    // Partial Update Integration Tests
+    @Test
+    public void testThatPartialUpdateEmployeeReturnsHttpStatus200() throws Exception {
+        EmployeeEntity employeeEntity = TestDataUtil.testCreateEmployeeA();
+        EmployeeEntity savedEmployeeEntity = employeeService.save(employeeEntity);
+
+        EmployeeDTO employeeDTO = TestDataUtil.testCreateEmployeeDtoA();
+        String employeeJson = objectMapper.writeValueAsString(employeeDTO);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.patch("/employees/" + savedEmployeeEntity.getEmpID())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(employeeJson)
+        ).andExpect(
+                MockMvcResultMatchers.status().isOk()
+        );
+    }
+
+    @Test
+    public void testThatPartialUpdateUpdatesExistingEmployee() throws Exception {
+        EmployeeEntity employeeEntity = TestDataUtil.testCreateEmployeeA();
+        EmployeeEntity savedEmployeeEntity = employeeService.save(employeeEntity);
+
+        EmployeeDTO employeeDTO = TestDataUtil.testCreateEmployeeDtoA();
+        employeeDTO.setFirstName("CHRISTIAN");
+        String employeeJson = objectMapper.writeValueAsString(employeeDTO);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.patch("/employees/" + savedEmployeeEntity.getEmpID())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(employeeJson)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.empID").value(savedEmployeeEntity.getEmpID())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.firstName").value("CHRISTIAN")
         );
     }
 }
