@@ -70,4 +70,17 @@ public class DepartmentController {
         // Updates the department and returns HttpStatus 200
         return new ResponseEntity<>(departmentMapper.mapTo(savedDepartmentEntity), HttpStatus.OK);
     }
+
+    // partial update endpoint
+    @PatchMapping("/departments/{deptID}")
+    public ResponseEntity<DepartmentDTO> partialUpdateDepartment(@PathVariable("deptID") Long deptID,
+                                                                 @RequestBody DepartmentDTO departmentDTO) {
+        if (!departmentService.ifExists(deptID)) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        DepartmentEntity departmentEntity = departmentMapper.mapFrom(departmentDTO);
+        DepartmentEntity updatedDepartment = departmentService.partialUpdate(deptID, departmentEntity);
+        return new ResponseEntity<>(departmentMapper.mapTo(updatedDepartment), HttpStatus.OK);
+    }
 }

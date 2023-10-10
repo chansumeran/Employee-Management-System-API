@@ -39,4 +39,14 @@ public class DepartmentServiceImplementation implements DepartmentService{
     public boolean ifExists(Long deptID) {
         return departmentRepository.existsById(deptID);
     }
+
+    @Override
+    public DepartmentEntity partialUpdate(Long deptID, DepartmentEntity departmentEntity) {
+        departmentEntity.setDeptID(deptID);
+
+        return departmentRepository.findById(deptID).map(existingDepartment -> {
+            Optional.ofNullable(departmentEntity.getName()).ifPresent(existingDepartment::setName);
+            return departmentRepository.save(existingDepartment);
+        }).orElseThrow(() -> new RuntimeException("Department does not exist"));
+    }
 }

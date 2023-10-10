@@ -11,4 +11,6 @@ public interface DepartmentService {
     Optional<DepartmentEntity> findOne(Long deptID);
 
     boolean ifExists(Long deptID);
+
+    DepartmentEntity partialUpdate(Long deptID, DepartmentEntity departmentEntity);
 }
