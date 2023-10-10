@@ -52,4 +52,9 @@ public class EmployeeServiceImplementation implements EmployeeService {
             return employeeRepository.save(existingEmployee);
         }).orElseThrow(() -> new RuntimeException("Employee does not exist."));
     }
+
+    @Override
+    public void delete(Long empID) {
+        employeeRepository.deleteById(empID);
+    }
 }

@@ -74,4 +74,10 @@ public class EmployeeController {
 
         return new ResponseEntity<>(employeeMapper.mapTo(savedEmployeeEntity), HttpStatus.OK);
     }
+
+    @DeleteMapping(path = "/employees/{empID}")
+    public ResponseEntity deleteEmployee(@PathVariable("empID") Long empID) {
+        employeeService.delete(empID);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
 }

@@ -14,4 +14,6 @@ public interface EmployeeService {
     boolean isExists(Long empID);
 
     EmployeeEntity partialUpdate(Long empID, EmployeeEntity employeeEntity);
+
+    void delete(Long empID);
 }
