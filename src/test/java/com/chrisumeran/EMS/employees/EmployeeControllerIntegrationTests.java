@@ -245,4 +245,27 @@ public class EmployeeControllerIntegrationTests {
                 MockMvcResultMatchers.jsonPath("$.firstName").value("CHRISTIAN")
         );
     }
+
+    @Test
+    public void testThatDeleteEmployeeReturnsHttpStatus204WhenNotExistingEmployee() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders.delete("/employees/77")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isNoContent()
+        );
+    }
+
+    @Test
+    public void testThatDeleteEmployeeActuallyDeletesEmployee() throws Exception {
+        EmployeeEntity employeeEntity = TestDataUtil.testCreateEmployeeA();
+        EmployeeEntity savedEmployeeEntity = employeeService.save(employeeEntity);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.delete("/employees/" + savedEmployeeEntity.getEmpID())
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isNoContent()
+        );
+    }
 }
