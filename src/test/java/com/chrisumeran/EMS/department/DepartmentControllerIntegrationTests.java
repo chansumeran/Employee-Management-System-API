@@ -211,4 +211,28 @@ public class DepartmentControllerIntegrationTests {
                 MockMvcResultMatchers.jsonPath("$.name").value("UPDATED")
         );
     }
+
+    // Delete Integration Tests
+    @Test
+    public void testThatDeleteDepartmentReturnsHttpStatus204WhenNotExistingDepartment() throws Exception {
+        mockMvc.perform(
+                MockMvcRequestBuilders.delete("/departments/1213")
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isNoContent()
+        );
+    }
+
+    @Test
+    public void testThatDeleteDepartmentActuallyDeletesDepartment() throws Exception {
+        DepartmentEntity departmentEntity = TestDataUtil.testCreateDepartmentA();
+        DepartmentEntity savedDepartmentEntity = departmentService.save(departmentEntity);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.delete("/departments/" + savedDepartmentEntity.getDeptID())
+                        .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(
+                MockMvcResultMatchers.status().isNoContent()
+        );
+    }
 }
