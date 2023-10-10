@@ -49,6 +49,7 @@ public class EmployeeServiceImplementation implements EmployeeService {
             Optional.ofNullable(employeeEntity.getLastName()).ifPresent(existingEmployee::setLastName);
             Optional.ofNullable(employeeEntity.getEmail()).ifPresent(existingEmployee::setEmail);
             Optional.ofNullable(employeeEntity.getSalary()).ifPresent(existingEmployee::setSalary);
+            Optional.ofNullable(employeeEntity.getDepartment()).ifPresent(existingEmployee::setDepartment);
             return employeeRepository.save(existingEmployee);
         }).orElseThrow(() -> new RuntimeException("Employee does not exist."));
     }
