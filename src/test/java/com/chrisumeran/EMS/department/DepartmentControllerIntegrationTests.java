@@ -172,4 +172,43 @@ public class DepartmentControllerIntegrationTests {
                 MockMvcResultMatchers.jsonPath("$.name").value(departmentDTO.getName())
         );
     }
+
+    // Partial Update Integration Tests
+    @Test
+    public void testThatPartialUpdateDepartmentReturnsHttpStatus200() throws Exception {
+        DepartmentEntity departmentEntity = TestDataUtil.testCreateDepartmentA();
+        DepartmentEntity savedDepartmentEntity = departmentService.save(departmentEntity);
+
+        DepartmentDTO departmentDTO = TestDataUtil.testCreateDepartmentDtoA();
+        departmentDTO.setName("UPDATED");
+        String departmentJson = objectMapper.writeValueAsString(departmentDTO);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.patch("/departments/" + savedDepartmentEntity.getDeptID())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(departmentJson)
+        ).andExpect(
+                MockMvcResultMatchers.status().isOk()
+        );
+    }
+
+    @Test
+    public void testThatPartialUpdateReturnsUpdatedDepartment() throws Exception {
+        DepartmentEntity departmentEntity = TestDataUtil.testCreateDepartmentA();
+        DepartmentEntity savedDepartmentEntity = departmentService.save(departmentEntity);
+
+        DepartmentDTO departmentDTO = TestDataUtil.testCreateDepartmentDtoA();
+        departmentDTO.setName("UPDATED");
+        String departmentJson = objectMapper.writeValueAsString(departmentDTO);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.patch("/departments/" + savedDepartmentEntity.getDeptID())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(departmentJson)
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.deptID").value(savedDepartmentEntity.getDeptID())
+        ).andExpect(
+                MockMvcResultMatchers.jsonPath("$.name").value("UPDATED")
+        );
+    }
 }
