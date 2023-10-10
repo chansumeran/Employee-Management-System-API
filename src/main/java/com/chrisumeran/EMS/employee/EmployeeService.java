@@ -11,5 +11,7 @@ public interface EmployeeService {
 
     Optional<EmployeeEntity> findOne(Long empID);
 
-    boolean ifExists(Long empID);
+    boolean isExists(Long empID);
+
+    EmployeeEntity partialUpdate(Long empID, EmployeeEntity employeeEntity);
 }

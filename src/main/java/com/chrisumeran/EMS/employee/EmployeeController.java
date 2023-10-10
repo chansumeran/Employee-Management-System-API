@@ -49,13 +49,28 @@ public class EmployeeController {
     public ResponseEntity<EmployeeDTO> fullUpdateEmployee(@PathVariable("empID") Long empID,
                                                           @RequestBody EmployeeDTO employeeDTO) {
 
-        if (!employeeService.ifExists(empID)) {
+        if (!employeeService.isExists(empID)) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         employeeDTO.setEmpID(empID);
         EmployeeEntity employeeEntity = employeeMapper.mapFrom(employeeDTO);
         EmployeeEntity savedEmployeeEntity = employeeService.save(employeeEntity);
+
+        return new ResponseEntity<>(employeeMapper.mapTo(savedEmployeeEntity), HttpStatus.OK);
+    }
+    
+    @PatchMapping(path = "/employees/{empID}")
+    public ResponseEntity<EmployeeDTO> partialUpdateEmployee(@PathVariable("empID") Long empID,
+                                                             @RequestBody EmployeeDTO employeeDTO) {
+
+        if (!employeeService.isExists(empID)) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        employeeDTO.setEmpID(empID);
+        EmployeeEntity employeeEntity = employeeMapper.mapFrom(employeeDTO);
+        EmployeeEntity savedEmployeeEntity = employeeService.partialUpdate(empID, employeeEntity);
 
         return new ResponseEntity<>(employeeMapper.mapTo(savedEmployeeEntity), HttpStatus.OK);
     }
