@@ -49,4 +49,9 @@ public class DepartmentServiceImplementation implements DepartmentService{
             return departmentRepository.save(existingDepartment);
         }).orElseThrow(() -> new RuntimeException("Department does not exist"));
     }
+
+    @Override
+    public void delete(Long deptID) {
+        departmentRepository.deleteById(deptID);
+    }
 }

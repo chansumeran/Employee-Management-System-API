@@ -32,7 +32,7 @@ public class DepartmentController {
     }
 
     // read many endpoint
-    @GetMapping("/departments")
+    @GetMapping(path = "/departments")
     public List<DepartmentDTO> findAllDepartments() {
         List<DepartmentEntity> departments =  departmentService.findAll();
         return departments
@@ -42,7 +42,7 @@ public class DepartmentController {
     }
 
     // read one endpoint
-    @GetMapping("departments/{deptID}")
+    @GetMapping(path = "departments/{deptID}")
     public ResponseEntity<DepartmentDTO> findDepartment(@PathVariable("deptID") Long deptID) {
         Optional<DepartmentEntity> foundDepartment = departmentService.findOne(deptID);
 
@@ -55,7 +55,7 @@ public class DepartmentController {
     }
 
     // update all endpoint
-    @PutMapping("departments/{deptID}")
+    @PutMapping(path = "departments/{deptID}")
     public ResponseEntity<DepartmentDTO> fullUpdateDepartment(@PathVariable("deptID") Long deptID,
                                                               @RequestBody DepartmentDTO departmentDTO) {
         // if a department doesn't exist, return HttpStatus 404
@@ -72,7 +72,7 @@ public class DepartmentController {
     }
 
     // partial update endpoint
-    @PatchMapping("/departments/{deptID}")
+    @PatchMapping(path = "/departments/{deptID}")
     public ResponseEntity<DepartmentDTO> partialUpdateDepartment(@PathVariable("deptID") Long deptID,
                                                                  @RequestBody DepartmentDTO departmentDTO) {
         if (!departmentService.ifExists(deptID)) {
@@ -82,5 +82,12 @@ public class DepartmentController {
         DepartmentEntity departmentEntity = departmentMapper.mapFrom(departmentDTO);
         DepartmentEntity updatedDepartment = departmentService.partialUpdate(deptID, departmentEntity);
         return new ResponseEntity<>(departmentMapper.mapTo(updatedDepartment), HttpStatus.OK);
+    }
+
+    // delete endpoint
+    @DeleteMapping(path = "/departments/{deptID}")
+    public ResponseEntity deleteDepartment(@PathVariable("deptID") Long deptID) {
+        departmentService.delete(deptID);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 }

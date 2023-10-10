@@ -13,4 +13,6 @@ public interface DepartmentService {
     boolean ifExists(Long deptID);
 
     DepartmentEntity partialUpdate(Long deptID, DepartmentEntity departmentEntity);
+
+    void delete(Long deptID);
 }
