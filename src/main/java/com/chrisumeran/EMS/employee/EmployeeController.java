@@ -1,6 +1,8 @@
 package com.chrisumeran.EMS.employee;
 
 import com.chrisumeran.EMS.mapper.Mapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,12 +30,10 @@ public class EmployeeController {
     }
 
     @GetMapping(path = "/employees")
-    public List<EmployeeDTO> findAllEmployees() {
-        List<EmployeeEntity> employees = employeeService.findAll();
-        return employees
-                .stream()
-                .map(employeeMapper::mapTo)
-                .collect(Collectors.toList());
+    public Page<EmployeeDTO> findAllEmployees(Pageable pageable) {
+        Page<EmployeeEntity> employees = employeeService.findAll(pageable);
+        return employees.map(employeeMapper::mapTo);
+
     }
 
     @GetMapping(path = "/employees/{empID}")

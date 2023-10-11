@@ -1,5 +1,7 @@
 package com.chrisumeran.EMS.employee;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,6 +30,11 @@ public class EmployeeServiceImplementation implements EmployeeService {
                 .spliterator(),
                 false)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<EmployeeEntity> findAll(Pageable pageable) {
+        return employeeRepository.findAll(pageable);
     }
 
     @Override
